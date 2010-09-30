@@ -1,0 +1,3 @@
+Sample implementations for paper "An Efficient Simulation Algorithm for Cache of Random Replacement Policy".
+* cache.java for a Java1.6 implementation
+* cache5.ml for an OCaml 3.11 implementation
