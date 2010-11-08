@@ -1,3 +1,5 @@
-Sample implementations for paper "An Efficient Simulation Algorithm for Cache of Random Replacement Policy".
+Sample implementations for paper "An Efficient Simulation Algorithm for Cache of Random Replacement Policy", see also http://www.springerlink.com/content/l324g2u075540681/.
+* sim-cache-fulltext.pdf for the paper.
+* zsc-ict.pdf for presentation
 * cache.java for a Java1.6 implementation
 * cache5.ml for an OCaml 3.11 implementation

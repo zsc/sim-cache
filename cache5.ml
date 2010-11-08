@@ -38,6 +38,15 @@ open Printf
 
 type address = int
 
+(*module type FIELD = sig*)
+(*  type t               *)
+(*  add : t -> t -> t    *)
+(*  sub : t -> t -> t    *)
+(*  mul : t -> t -> t    *)
+(*  div : t -> t -> t    *)
+(*  neg : t -> t         *)
+(*  end                  *)
+
 module BoundMap = struct
   type t = {
     mutable h' : (address, float) Hashtbl.t;
