@@ -1,0 +1,39 @@
+lruAge=Function[trace,Module[{update,offset=0},
+	update=Function[{assoc,a},
+		Prepend[If[MemberQ[assoc[[;;,1]],a]
+			,Module[{pivot,pos=Position[assoc[[;;,1]],a][[1,1]]},Sow[pos-1];pivot=assoc[[pos,2]];{#[[1]],#[[2]]+Boole[#[[2]]<pivot]}&/@Delete[assoc,pos]]
+			,Sow[Infinity];{#[[1]],#[[2]]+1}&/@assoc],{a,0}]];
+	{#[[1]],#[[2,1]]}&@Reap@Fold[update,{},trace]
+	]];
+randAge=Function[{n,trace},Module[{update,h,offset=0,gamma=1.-1/n},
+	update=Function[a,Module[{dist},
+		dist=If[NumberQ[h[a]],offset+h[a],Infinity];offset+=1.-gamma^dist;h[a]=-offset;dist]];
+	update/@trace
+	]];
+(*randAgeMix=Function[{n,mixedTrace},Module[{update,updateSingle,h,offset=0,gamma=1.-1/n},
+	updateSingle=Function[arg,Module[{weight,a,dist},{weight,a}=arg;
+		dist=If[NumberQ[h[a]],offset+h[a],Infinity];{weight(1.-gamma^dist),dist}]];
+	update=With[{miss=Total/@Transpose[updateSingle/@#]},offset+=miss;]&;
+	update/@mixedTrace
+	]];*)
+randSim=Function[{n,trace},Module[{update},
+	update=Function[{cache,a},If[MemberQ[cache,a],{0,cache},{1,ReplacePart[cache,RandomInteger[{1,n}]->a]}]];
+	{#[[1]],#[[2,1]]}&@Reap@Fold[(Sow[#[[1]]];#[[2]])&@update[#,#2]&,Array[Null&,n],trace]
+	]];
+(*M=4;ds=randAge[M,{a,b,a,c,d,b}];toMisses=Function[{n,trace},1-(1-1/n)^#&/@trace];{ds,toMisses[M,ds]}//MatrixForm*)
+stackDistance=Function[trace,Module[{update},
+	update=Function[{stack,a},
+		If[MemberQ[stack,a]
+			,With[{pos=Position[stack,a,1,1][[1,1]]},{pos-1,Prepend[Delete[stack,pos],a]}]
+			,{Infinity,Prepend[stack,a]}]];
+	{#[[1]],#[[2,1]]}&@Reap@Fold[(Sow[#[[1]]];#[[2]])&@update[#,#2]&,{},trace]
+	]];
+(*Join[{traces[[1]],toMisses[3,randAge[3,traces[[1]]]]}
+	,Table[Mean/@Transpose@N@Table[randSim[3,traces[[1]]][[2]],{cnt}],{cnt,{5,50,500}}]]//MatrixForm*)
+
+SeedRandom[1003];n=100;numVoc=10;numRepetition=10;as=Array[a,numVoc];
+(*l=RandomChoice[#->as]&/@RandomReal[1,{n,numVoc}];r=stackDistance[l];{{l,r[[2]]}//MatrixForm,r[[1]]}*)
+weights=#/Total[#]&/@RandomReal[1,{n,numVoc}];mixedTrace=Thread@{#,as}&/@weights;
+traces=Transpose[RandomChoice[#->as,numRepetition]&/@weights];(*traces//MatrixForm*)
+dists=stackDistance[#][[2]]&/@traces;dists//MatrixForm
+(*Histogram/@Map[(*1-Exp[-#]*)#&,Transpose[dists],{2}]*)
